@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>User Data</h2>
+
+        <!--Top Bar (Search + Add Button) -->
+        <div class="top-bar">
+            <div>
+                <input type="text" id="searchInput" placeholder="Search users..." />
+                <button id="searchBtn">Search</button>
+            </div>
+            <button id="addUserBtn">Add User</button>
+        </div>
+
+        <!--Users Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Role ID</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+
+        <!--Pagination -->
+        <div style="margin-top: 10px;">
+            <button id="prevBtn">Previous</button>
+            <span id="pageNumbers"></span>
+            <button id="nextBtn">Next</button>
+        </div>
+
+        <!--Form -->
+        <div id="userFormContainer" style="display:none;">
+            <h3 id="formTitle">Add User</h3>
+
+            <input type="hidden" id="userId">
+
+            <div>
+                <label>Email:</label>
+                <input type="text" id="email">
+            </div>
+
+            <div>
+                <label>Mobile:</label>
+                <input type="text" id="mobile">
+            </div>
+
+            <div>
+                <label>Role ID:</label>
+                <input type="number" id="role_id">
+            </div>
+
+            <div>
+                <label>Status:</label>
+                <input type="text" id="status">
+            </div>
+
+            <button id="saveUserBtn">Save</button>
+            <button id="cancelBtn">Cancel</button>
+        </div>
+
+    </div>  
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
