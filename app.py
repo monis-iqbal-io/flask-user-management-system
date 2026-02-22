@@ -1,6 +1,7 @@
 from flask import Flask , request, jsonify , render_template
 import mysql.connector
 import math
+import os
 app = Flask(__name__)
 
 
@@ -8,10 +9,10 @@ app = Flask(__name__)
 
 
 db_config = {
-    "host" : "localhost",
-    "user" : "root",
-    "password" : "Calculus@1801",
-    "database" : "render_task2"
+    "host": os.environ.get("DB_HOST"),
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "database": os.environ.get("DB_NAME")
 }
 
 
@@ -286,4 +287,4 @@ def delete_user(user_id):
         return jsonify({"error" :str(e)})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
