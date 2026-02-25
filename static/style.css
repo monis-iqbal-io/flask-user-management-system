@@ -125,7 +125,7 @@ tbody tr:hover {
 
 #userFormContainer {
     margin-top: 20px;
-    padding: 15px;
+    padding: 20px;
     border-radius: 6px;
     background-color: #f8f9fa;
     border: 1px solid #ddd;
@@ -135,9 +135,7 @@ tbody tr:hover {
     margin-top: 0;
 }
 
-#userFormContainer div {
-    margin-bottom: 10px;
-}
+
 
 #saveUserBtn {
     background-color: #28a745;
@@ -149,3 +147,57 @@ tbody tr:hover {
     color: white;
     margin-left: 5px;
 }
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    display: block;
+    margin-top: 3px;
+}
+
+/* FORM CONTAINER */
+#userFormContainer {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+}
+
+/* GRID LAYOUT */
+.form-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    margin-bottom: 15px;
+    column-gap: 15px;
+}
+
+/* LABEL */
+.form-row label {
+    font-weight: 600;
+}
+
+/* INPUTS & SELECT */
+.form-row input,
+.form-row select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ERROR MESSAGE (Full Width Below Input) */
+.form-row .error-message {
+    grid-column: 2 / 3;
+    margin-top: 4px;
+}
+
+/* BUTTON SECTION */
+.form-actions {
+    margin-top: 10px;
+}
+
+

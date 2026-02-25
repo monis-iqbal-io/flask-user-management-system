@@ -2,18 +2,44 @@ from flask import Flask , request, jsonify , render_template
 import mysql.connector
 import math
 import os
+import re
 app = Flask(__name__)
+
+
+#Backend Validation Function
+def validate_user_data(email , mobile , role_id , status):
+
+    #Email
+    email_pattern = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+    if not email or not re.match(email_pattern, email):
+        return False, "Invalid email format"
+    
+    #mobile
+    if not mobile or not mobile.isdigit() or len(mobile) != 10:
+        return False ,"Mobile must be exactly 10 digits"
+    
+    #role_id
+    try:
+        role_number = int(role_id)
+        if role_number < 1 or role_number > 3:
+            return False , "Role ID must be between 1 and 3"
+    except:
+        return False , "Role ID must be a number" 
+    
+    #status
+    if status not in ["active" , "inactive"]:
+        return False , "Invalid status"
+    
+    return True , None
 
 
 #Database Configuration
 
-
 db_config = {
-    "host": os.environ.get("DB_HOST"),
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "database": os.environ.get("DB_NAME"),
-    "port": int(os.environ.get("DB_PORT"))
+    "host" : "localhost",
+    "user" : "root",
+    "password" : "Calculus@1801",
+    "database" : "render_task2" 
 }
 
 # Function to create Database Connection 
@@ -67,39 +93,65 @@ def get_users():
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        search_pattern = f"%{search}%"
+        
 
+        #updated search 
+        search = search.strip().lower()
 
-         
-        #Count Query (with search)
-        count_query = """
-            SELECT COUNT(*)
-            FROM users
-            WHERE email LIKE %s
-            OR mobile LIKE %s
-            OR role_id LIKE %s
-            OR status LIKE %s
-        """
-        cursor.execute(count_query,(search_pattern,search_pattern,search_pattern,search_pattern))
-        total_records = cursor.fetchone()[0]
+        if search == "active" or search == "inactive":
 
-        total_pages = math.ceil(total_records/limit)
+            # Exact status match (fixes active/inactive bug)
+            count_query = """
+                SELECT COUNT(*)
+                FROM users
+                WHERE status = %s
+            """
+            cursor.execute(count_query, (search,))
+            total_records = cursor.fetchone()[0]
 
-        #Fetch Paginated Users
-        data_query = """
-            SELECT id , email , mobile , role_id , status
-            FROM users
-            WHERE email LIKE %s
-            OR MOBILE LIKE %s
-            OR role_id LIKE %s
-            OR status LIKE %s
-            LIMIT %s OFFSET %s
-                    
-        """
-        cursor.execute(data_query ,
-                       (search_pattern,search_pattern,search_pattern,search_pattern,
-                        limit , offset))
+            total_pages = math.ceil(total_records / limit)
 
+            data_query = """
+                SELECT id, email, mobile, role_id, status
+                FROM users
+                WHERE status = %s
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(data_query, (search, limit, offset))
+
+        else:
+
+            search_pattern = f"%{search}%"
+
+            count_query = """
+                SELECT COUNT(*)
+                FROM users
+                WHERE email LIKE %s
+                OR mobile LIKE %s
+                OR role_id LIKE %s
+                OR status LIKE %s
+            """
+            cursor.execute(count_query,
+                        (search_pattern, search_pattern, search_pattern, search_pattern))
+            total_records = cursor.fetchone()[0]
+
+            total_pages = math.ceil(total_records / limit)
+
+            data_query = """
+                SELECT id, email, mobile, role_id, status
+                FROM users
+                WHERE email LIKE %s
+                OR mobile LIKE %s
+                OR role_id LIKE %s
+                OR status LIKE %s
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(data_query,
+                        (search_pattern, search_pattern, search_pattern, search_pattern,
+                            limit, offset))
+
+            
+            
         records = cursor.fetchall()
         
         users = []
@@ -126,7 +178,7 @@ def get_users():
 
     except Exception as e:
         return jsonify({"error":repr(e)})
-    
+                
  #GET single User   
 @app.route("/api/users/<int:user_id>", methods=["GET"])
 def get_single_user(user_id):
@@ -176,8 +228,9 @@ def create_user():
         status = data.get("status") 
 
 
-        if not email or not mobile:
-            return jsonify({"error" : "Email and Mobile are recquired"})
+        is_valid , error_message = validate_user_data(email , mobile , role_id , status)
+        if not is_valid:
+            return jsonify({"error" : error_message}) , 400
         
         connection = get_db_connection()
         cursor = connection.cursor()
@@ -220,6 +273,10 @@ def update_user(user_id):
         mobile = data.get("mobile")
         role_id = data.get("role_id")
         status = data.get("status")
+
+        is_valid , error_message = validate_user_data(email ,  mobile , role_id , status)
+        if not is_valid:
+            return jsonify({"error" : error_message}) ,400
 
         connection = get_db_connection()
         cursor = connection.cursor()

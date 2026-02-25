@@ -196,6 +196,9 @@ document.addEventListener("DOMContentLoaded", function() {
         statusInput.value = "";
 
         userFormContainer.style.display = "block";
+
+        //updated add user button to scroll to form
+        userFormContainer.scrollIntoView({behavior:"smooth"});
     });
 
 
@@ -222,6 +225,7 @@ document.addEventListener("DOMContentLoaded", function() {
             statusInput.value = user.status;
 
             userFormContainer.style.display = "block";
+            userFormContainer.scrollIntoView({behavior: "smooth"});
         })
         .catch(error => {
             alert("User not found");
@@ -236,7 +240,48 @@ document.addEventListener("DOMContentLoaded", function() {
         userFormContainer.style.display = "none";
     });
 
+    //FORM VALIDATION FUNCTION
+    function validateForm(email , mobile ,role_id , status){
 
+        let isValid = true;
+
+        //clear previous errors
+        document.getElementById("emailError").textContent = "";
+        document.getElementById("mobileError").textContent = "";
+        document.getElementById("roleError").textContent = "";
+        document.getElementById("statusError").textContent = "";
+
+
+        // Email regex
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if(!emailPattern.test(email)){
+        document.getElementById("emailError").textContent = "Enter a valid email address";
+        isValid = false;
+    }
+    // Mobile regex (exactly 10 digits)
+    const mobilePattern = /^[0-9]{10}$/;
+
+    if (!mobilePattern.test(mobile)) {
+        document.getElementById("mobileError").textContent = "Mobile must be exactly 10 digits";
+        isValid = false;
+    }
+
+    //Role ID validation (set between 1 & 3)
+    const roleNumber = parseInt(role_id);
+
+    if(isNaN(roleNumber) || roleNumber < 1 || roleNumber > 3){
+        document.getElementById("roleError").textContent = "Role ID must be between 1 and 3" ;
+        isValid = false;
+    }
+
+    //status validation 
+    if(status !== "active" && status!== "inactive" ){
+        document.getElementById("statusError").textContent = "Please select a valid status";
+        isValid = false;
+    }
+    return isValid;
+    }
 
     // SAVE BUTTON
     saveUserBtn.addEventListener("click" , function(){
@@ -247,10 +292,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const status = statusInput.value.trim();
 
 
-        //Basic validation
-        if (!email || !mobile){
-            alert("Email and mobile are recquired");
-            return;
+        //Validation function
+        if(!validateForm(email , mobile , role_id , status)) {
+            return; //stop submission if validation fails
         }
 
         const userId = userIdInput.value;
