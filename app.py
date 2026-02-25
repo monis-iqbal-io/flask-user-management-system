@@ -36,10 +36,11 @@ def validate_user_data(email , mobile , role_id , status):
 #Database Configuration
 
 db_config = {
-    "host" : "localhost",
-    "user" : "root",
-    "password" : "Calculus@1801",
-    "database" : "render_task2" 
+    "host": os.environ.get ("DB_HOST"),
+    "user": os.environ. get ("DB_USER"),
+    "password": os.environ.get ("DB_PASSWORD"),
+    "database": os.environ.get ("DB_NAME"),
+    "port": int(os.environ. get ("DB_PORT"))
 }
 
 # Function to create Database Connection 
@@ -100,7 +101,7 @@ def get_users():
 
         if search == "active" or search == "inactive":
 
-            # Exact status match (fixes active/inactive bug)
+            # Exact status match
             count_query = """
                 SELECT COUNT(*)
                 FROM users
