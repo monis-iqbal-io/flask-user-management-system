@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const saveUserBtn = document.getElementById("saveUserBtn");
     const cancelBtn = document.getElementById("cancelBtn");
 
+    //Strict mobile input control (numbers only , max 10 digits)
+    mobileInput.addEventListener("input" , function (){
+        this.value = this.value.replace(/\D/g,"").slice(0 ,10)
+    })
+
 
     //  FETCH USERS FUNCTION
     function fetchUsers(page) {
